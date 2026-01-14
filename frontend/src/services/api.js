@@ -1,7 +1,19 @@
 import axios from 'axios';
 
-// Eclipse default port 8080 hota hai, agar aapka alag hai toh change karein
-const API_URL = "http://localhost:8080/api"; 
+const API = axios.create({ baseURL: 'http://localhost:8080/api' });
 
-export const getRides = () => axios.get(`${API_URL}/rides`);
-// Baad mein login/signup ke liye yahan aur functions add karenge
+// Sabhi requests ke saath JWT Token bhejne ke liye interceptor
+API.interceptors.request.use((req) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+        req.headers.Authorization = `Bearer ${token}`;
+    }
+    return req;
+});
+
+export const getRides = () => API.get('/rides/all');
+export const postRide = (data) => API.post('/rides/post', data);
+export const loginUser = (data) => API.post('/auth/signin', data);
+export const signupUser = (data) => API.post('/auth/signup', data);
+
+export default API;
